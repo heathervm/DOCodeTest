@@ -1,19 +1,21 @@
+import os
 import BeautifulSoup
+import certifi
 from BeautifulSoup import SoupStrainer
 import graphviz
 from graphviz import Digraph
 import urllib2
-from StringIO import StringIO
 
 
 page_seen = []
 dot = Digraph(comment='Site map')
+
 def find_links(url):
 	local_pages = []
-	url = url
-	page = urllib2.urlopen(url)
-	source = page.read()
-	
+	try: 
+		source = urllib2.urlopen(url)
+	except urllib2.URLError:
+		return []
 
 
 	parse_links = BeautifulSoup.BeautifulSoup(source)
@@ -34,15 +36,13 @@ def find_links(url):
 		pics.append(image)
 		return pics
 	
-	print pics
 	return(local_pages, pics)
-	return page_seen
-
+	
 
 
 def spider(local_pages):
 	for link in local_pages: 
-		link_url = "http://www.escapevelocity.bc.ca"+link
+		link_url = "http://www.escapevelocity.bc.ca/" + link
 		dot.node(link, link)
 		new_links, pics = find_links(link_url)
 		for new_link in new_links: 
@@ -51,5 +51,5 @@ def spider(local_pages):
 
 spider(['/'])
 		
-dot.render('code_test.gv', view=True)	
+#dot.render('code_test.gv', view=True)	
 
